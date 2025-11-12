@@ -1,0 +1,30 @@
+html, body {
+    font-size: 12px;
+    font-family: "Open Sans";
+    background: #EEE;
+  }
+  
+  a {
+    text-decoration: none;
+    color: #999;
+  }
+  
+  audio {
+    display: block;
+  }
+  
+  .mix {
+    margin: 0;
+  }
+  
+  div.controls label {
+    display: inline-block;
+    text-align: right;
+    width: 110px;
+  }
+  
+  div.controls label, div.controls input {
+      vertical-align: middle;
+      padding: 0;
+      margin: 0;
+  }

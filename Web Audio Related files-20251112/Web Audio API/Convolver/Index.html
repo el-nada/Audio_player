@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./styles.css">
+    <title></title>
+</head>
+<body>
+    <h2>Web Audio Api Convolver</h2>
+<div class="mix">
+  <div class="controls">
+    <label>Dry Wet</label>
+    <input type="range" value="100" step="1" min="0" max="100" oninput="changeValue(this.value, 'mix');"></input>
+    <label>Choose Impulse</label>
+    <select id="impulse" size="1" onchange="loadImpulse(this.value);">
+      <option value="factory.hall.wav">Factory Hall</option>
+      <option value="pa.horn.in.hall.wav">PA horn in hall</option>
+      <option value="blaupunkt.tube.radio.wav">Blaupunkt tube radio</option>
+      <option value="church.schellingwoude.wav">Church Schellingwoude</option>
+      <option value="coalhod.wav">Coalhod</option>
+      <option value="vacuum.cleaner.tube.wav">Vacuum cleaner tube</option>
+      <option value="70.philips.box.stereo.wav">70 Philips Box</option>
+      <option value="washing.machine.wav">Washing machine</option>
+      <option value="tin.can.wav">Tin Can</option>
+<option value="Marshall1960A-G12Ms-TAB57-CapEdgeOffAxis-6in.wav">Marshall1960A</option>
+    </select>
+  </div>
+</div>
+<h4>Impulse Responses by <a href="http://fokkie.home.xs4all.nl/IR.htm" target="_blank">Fokke van Saane</a></h4>
+<h4>Music by André Michelle <a href="http://www.audiotool.com/track/mono_sonic/">mono sonic</a></h4>
+<audio id="player" crossorigin controls>
+  <source src="/audio files/Zai Shui Yi Fang Vocal only.mp3" type="audio/mpeg">  
+  Your browser does not support the audio tag.
+</audio>
+<p>Impulse Responses are uncompressed wav-files. Please be patient.</p>
+<p>Chrome only.</p>
+    <script src="./main.js"></script>
+</body>
+</html>
