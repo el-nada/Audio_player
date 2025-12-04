@@ -33,6 +33,11 @@
     <button id="lowpassRes">Lowpass resonant</button>
     <button id="highpassRes">highpass resonant</button>
 
+    <h2>Filter Parameters</h2>
+    Frequency: <input type="range" id="filter_freq" min="20" max="20000" step="1" value="1000">
+    Q: <input type="range" id="filter_q" min="0" max="30" step="0.1" value="1">
+    Gain: <input type="range" id="filter_gain" min="-40" max="40" step="0.1" value="0">
+
     <h1>Effects</h1>
     <div id="effectSelect">
     <label><input type="checkbox" value="distortion"> Distortion </label><br>
@@ -45,6 +50,6 @@
 
     <h2> Effect Sliders </h2>
     <div id="eSliders"></div>
-m
+
     <script src="./main.js"></script>
 </body>

@@ -27,6 +27,9 @@ const startBtn  = $('#start_button');
 const stopBtn   = $('#stop_button');
 const saveBtn   = $('#save_button');
 const volumeSld   = $('#volume_slider');
+const filterFreqSlider = $('#filter_freq');
+const filterQSlider    = $('#filter_q');
+const filterGainSlider = $('#filter_gain');
 
 // Initialize AudioContext once 
 function ensureAudioContext() {
@@ -378,15 +381,19 @@ function addFilter(filterType) {
     }
 
     filter.type = filterType;
-    filter.frequency.setValueAtTime(1000, audioContext.currentTime);
-    filter.gain.setValueAtTime(25, audioContext.currentTime);
+    
+    // Set default values if the sliders are at their defaults
+    filter.frequency.value = parseFloat(filterFreqSlider.val()) || 1000;
+    filter.Q.value = parseFloat(filterQSlider.val()) || 1;
+    filter.gain.value = parseFloat(filterGainSlider.val()) || 0;
 
-    if (filterType == "lowpassRes"){
+    // Presets for resonant filters
+    if (filterType == "lowpassRes") {
         filter.frequency.value = 800;
         filter.Q.value = 15;
     }
 
-    if (filterType=="highpassRes"){
+    if (filterType == "highpassRes") {
         filter.frequency.value = 3000;
         filter.Q.value = 12;
     }
@@ -451,6 +458,18 @@ volumeSld.on('input', function() {
     if (gainNode) {
         gainNode.gain.value = parseFloat(this.value);
     }
+});
+
+filterFreqSlider.on('input', function() {
+    if (filter) filter.frequency.value = parseFloat(this.value);
+});
+
+filterQSlider.on('input', function() {
+    if (filter) filter.Q.value = parseFloat(this.value);
+});
+
+filterGainSlider.on('input', function() {
+    if (filter) filter.gain.value = parseFloat(this.value);
 });
 
 // Initialize canvas background
