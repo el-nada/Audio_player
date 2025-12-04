@@ -5,6 +5,7 @@ let sourceNode = null;
 let analyserNode = null; 
 
 let gainNode = null;
+let filter = null; 
 
 let isPlaying = false;
 let animationId = null;
@@ -34,7 +35,7 @@ function ensureAudioContext() {
     }
 }
 
-// Create analyser and gain for visualizer and volume control 
+// Create analyser and gain for visualizer, volume control and filter 
 function ensureNodes() {
     ensureAudioContext();
     if (!analyserNode) {
@@ -45,7 +46,13 @@ function ensureNodes() {
         gainNode = audioContext.createGain();
         gainNode.gain.value = 1.0;
     }
+    if (!filter) {
+        filter = audioContext.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = 1000;
+    }
 }
+
 
 // Create a new buffer source to play the audio
 function createSource() {
@@ -53,7 +60,8 @@ function createSource() {
     const source = audioContext.createBufferSource();
     source.buffer = audioBuffer;
     // Connect the audio nodes to keep the visualization and volume consistent
-    source.connect(gainNode);
+    source.connect(filter);
+    filter.connect(gainNode); 
     gainNode.connect(analyserNode);
     analyserNode.connect(audioContext.destination);
     return source;
@@ -242,22 +250,30 @@ async function exportWavAndDownload(filename = 'edited_audio.wav') {
     const length = audioBuffer.length; 
 
     const offlineCtx = new OfflineAudioContext(numChannels, length, sampleRate);
-
+    
     // Create buffer source in offline context
     const offlineSource = offlineCtx.createBufferSource();
     offlineSource.buffer = audioBuffer;
 
-    // ADD the filters here later maybe ?? 
-    let lastNode = offlineSource;
+    // Add the filter here 
+    const offlineFilter = offlineCtx.createBiquadFilter(); 
+    if (filter) {
+        offlineFilter.type = filter.type;
+        offlineFilter.frequency.value = filter.frequency.value;
+        offlineFilter.Q.value = filter.Q.value;
+        offlineFilter.gain.value = filter.gain.value;
+    }
 
     // Recreate gain with same value (Relevent if we add a change gain functionnality)
     const offlineGain = offlineCtx.createGain();
     offlineGain.gain.value = gainNode ? gainNode.gain.value : 1.0;
-    lastNode.connect(offlineGain);
-    lastNode = offlineGain;
+    
+    // Build the chain 
+    offlineSource.connect(offlineFilter); 
+    offlineFilter.connect(offlineGain);
+    offlineGain.connect(offlineCtx.destination);
 
-    // Connect to destination and render
-    lastNode.connect(offlineCtx.destination);
+    // Start rendering
     offlineSource.start(0);
 
     drawMessage('Rendering audio for export.');
@@ -352,6 +368,29 @@ function triggerDownload(blob, filename) {
     }, 100);
 }
 
+// Link the right filter 
+function addFilter(filterType) {
+    ensureNodes();
+
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+
+    filter.type = filterType;
+    filter.frequency.setValueAtTime(1000, audioContext.currentTime);
+    filter.gain.setValueAtTime(25, audioContext.currentTime);
+
+    if (filterType == "lowpassRes"){
+        filter.frequency.value = 800;
+        filter.Q.value = 15;
+    }
+
+    if (filterType=="highpassRes"){
+        filter.frequency.value = 3000;
+        filter.Q.value = 12;
+    }
+}
+
 // Linking all the buttons to the proper functions
 
 // Link the select button to the file picker
@@ -393,6 +432,17 @@ stopBtn.on('click', function(e) {
 saveBtn.on('click', function(e) {
     exportWavAndDownload('edited_audio.wav');
 });
+
+$('#lowpass').on('click', () => addFilter('lowpass'));
+$('#highpass').on('click', () => addFilter('highpass'));
+$('#bandpass').on('click', () => addFilter('bandpass'));
+$('#highshelf').on('click', () => addFilter('highshelf'));
+$('#lowshelf').on('click', () => addFilter('lowshelf'));
+$('#peaking').on('click', () => addFilter('peaking'));
+$('#notch').on('click', () => addFilter('notch'));
+$('#allpass').on('click', () => addFilter('allpass'));
+$('#lowpassRes').on('click', () => addFilter('lowpassRes'));
+$('#highpassRes').on('click', () => addFilter('highpassRes'));
 
 // Initialize canvas background
 clearCanvas();
