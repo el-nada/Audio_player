@@ -26,6 +26,7 @@ const selectBtn = $('#select_audio');
 const startBtn  = $('#start_button');
 const stopBtn   = $('#stop_button');
 const saveBtn   = $('#save_button');
+const volumeSld   = $('#volume_slider');
 
 // Initialize AudioContext once 
 function ensureAudioContext() {
@@ -433,6 +434,7 @@ saveBtn.on('click', function(e) {
     exportWavAndDownload('edited_audio.wav');
 });
 
+// Linking all the filters to the proper function call 
 $('#lowpass').on('click', () => addFilter('lowpass'));
 $('#highpass').on('click', () => addFilter('highpass'));
 $('#bandpass').on('click', () => addFilter('bandpass'));
@@ -443,6 +445,13 @@ $('#notch').on('click', () => addFilter('notch'));
 $('#allpass').on('click', () => addFilter('allpass'));
 $('#lowpassRes').on('click', () => addFilter('lowpassRes'));
 $('#highpassRes').on('click', () => addFilter('highpassRes'));
+
+// Link the volume slider to a volume change  
+volumeSld.on('input', function() {
+    if (gainNode) {
+        gainNode.gain.value = parseFloat(this.value);
+    }
+});
 
 // Initialize canvas background
 clearCanvas();
